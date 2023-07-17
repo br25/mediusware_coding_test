@@ -54,9 +54,15 @@ class ListProductView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['variants'] = ProductVariant.objects.filter(
-            product__in=context['products']
-        ).values('variant_title').distinct()
+        context['variants'] = Variant.objects.all().distinct()
+
+        variant_sub_options = {} 
+        
+        for variant in context['variants']:
+            sub_options = ProductVariant.objects.filter(variant=variant).values_list('variant_title', flat=True).distinct()
+            variant_sub_options[variant] = sub_options
+
+        context['variant_sub_options'] = variant_sub_options
 
         product_variant_data = {}
 
