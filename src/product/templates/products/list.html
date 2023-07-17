@@ -5,58 +5,9 @@
 {% block title %} Product List {% endblock %}
 
 {% block content %}
-<style>
-    .col-md-2 {
-        text-align: center;
-        margin: 20px;
-    }
-
-    .pagination {
-        padding: 0;
-        margin: 0;
-    }
-
-    .pagination li {
-        display: inline;
-        margin: 0;
-        padding: 0;
-    }
-
-    .pagination li a,
-    .pagination li span {
-        color: #007bff;
-        border: 1px solid #8f98a1;
-        padding: 8px 12px;
-        text-decoration: none;
-    }
-
-    .pagination li.disabled span {
-        color: #6c757d;
-        pointer-events: none;
-    }
-
-    .pagination li.current span {
-        background-color: #007bff;
-        color: #fff;
-    }
-
-    /* Optional: Add hover effect for links */
-    .pagination li a:hover {
-        background-color: #007bff;
-        color: #fff;
-    }
-
-    /* Optional: Add border radius for better appearance */
-    .pagination li:first-child a,
-    .pagination li:last-child a {
-        border-radius: 5px;
-    }
-</style>
-
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Products</h1>
     </div>
-
 
     <div class="card">
         <form action="" method="get" class="card-header">
@@ -92,10 +43,10 @@
                     <button type="submit" class="btn btn-primary float-right"><i class="fa fa-search"></i></button>
                 </div>
             </div>
-        </form>        
+        </form>
 
         <div class="card-body">
-            <div class="table-response">
+            <div class="table-responsive">
                 <table class="table">
                     <thead>
                         <tr>
@@ -132,49 +83,52 @@
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm">
-                                    <a href="" class="btn btn-success">Edit</a>
+                                    <a href="/product/edit/{{ product.id }}/" class="btn btn-success">Edit</a>
                                 </div>
-                            </td>
+                            </td>                            
                         </tr>
                         {% endfor %}
-                    </tbody>                    
+                    </tbody>
                 </table>
             </div>
         </div>
-        
+
         <div class="card-footer">
             <div class="row justify-content-between">
-                <div class="col-md-6">
+                <div class="col-md-6 mt-4">
                     <p>Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} out of {{ page_obj.paginator.count }}</p>
                 </div>
-                <div class="col-md-2">
-                    <ul class="pagination">
-                        {% if page_obj.has_previous %}
-                            <li><a href="?page=1">&laquo;</a></li>
-                            <li><a href="?page={{ page_obj.previous_page_number }}">&lsaquo;</a></li>
-                        {% else %}
-                            <li class="disabled"><span>&laquo;</span></li>
-                            <li class="disabled"><span>&lsaquo;</span></li>
-                        {% endif %}
-                
-                        {% for i in page_obj.paginator.page_range %}
-                            {% if page_obj.number == i %}
-                                <li class="current"><span>{{ i }}</span></li>
+                <div class="col-md-2 text-center m-4">
+                    <div class="d-flex justify-content-center">
+                        <ul class="pagination">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item px-1 mx-1"><a class="page-link" href="?page=1">&laquo;</a></li>
+                                <li class="page-item px-1 mx-1"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">&lsaquo;</a></li>
                             {% else %}
-                                <li><a href="?page={{ i }}">{{ i }}</a></li>
+                                <li class="page-item disabled px-1 mx-1"><span class="page-link">&laquo;</span></li>
+                                <li class="page-item disabled px-1 mx-1"><span class="page-link">&lsaquo;</span></li>
                             {% endif %}
-                        {% endfor %}
-                
-                        {% if page_obj.has_next %}
-                            <li><a href="?page={{ page_obj.next_page_number }}">&rsaquo;</a></li>
-                            <li><a href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a></li>
-                        {% else %}
-                            <li class="disabled"><span>&rsaquo;</span></li>
-                            <li class="disabled"><span>&raquo;</span></li>
-                        {% endif %}
-                    </ul>
+                            
+                            {% for i in page_obj.paginator.page_range %}
+                                {% if page_obj.number == i %}
+                                    <li class="page-item active px-1 mx-1" aria-current="page"><span class="page-link">{{ i }}</span></li>
+                                {% else %}
+                                    <li class="page-item px-1 mx-1"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if page_obj.has_next %}
+                                <li class="page-item px-1 mx-1"><a class="page-link" href="?page={{ page_obj.next_page_number }}">&rsaquo;</a></li>
+                                <li class="page-item px-1 mx-1"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a></li>
+                            {% else %}
+                                <li class="page-item disabled px-1 mx-1"><span class="page-link">&rsaquo;</span></li>
+                                <li class="page-item disabled px-1 mx-1"><span class="page-link">&raquo;</span></li>
+                            {% endif %}
+                        </ul>
+                    </div>
                 </div>
+                    
             </div>
-        </div>        
+        </div>
     </div>
 {% endblock %}

@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import axios from 'axios';
 import TagsInput from 'react-tagsinput';
 import 'react-tagsinput/react-tagsinput.css';
 import Dropzone from 'react-dropzone'
@@ -24,6 +25,15 @@ const CreateProduct = (props) => {
             option: available_variants[0],
             tags: []
         }])
+    };
+
+    // handle changes in price and stock inputs
+    const handleProductVariantPriceChange = (index, field, value) => {
+      setProductVariantPrices((prevPrices) =>
+        prevPrices.map((price, idx) =>
+          idx === index ? { ...price, [field]: value } : price
+        )
+      );
     };
 
     // handle input change on tag input
@@ -75,10 +85,30 @@ const CreateProduct = (props) => {
     }
 
     // Save product
-    let saveProduct = (event) => {
+    const saveProduct = (event) => {
         event.preventDefault();
-        // TODO : write your code here to save the product
-    }
+    
+        const formData = {
+          productName: '', // Add the actual product name here
+          productSKU: '', // Add the actual product SKU here
+          description: '', // Add the actual product description here
+          mediaFiles: [], // Add the media files (if required) from Dropzone component here
+          productVariants: productVariantPrices,
+        };
+    
+        axios
+          .post('/api/products/create/', formData) // Replace '/api/products/create/' with your Django backend API endpoint URL for product creation
+          .then((response) => {
+            // Handle successful response (if needed)
+            console.log(response.data);
+            // Optional: Redirect to the product list page after successful creation
+            // window.location.href = '/product/list/';
+          })
+          .catch((error) => {
+            // Handle error (if needed)
+            console.error(error);
+          });
+      };
 
 
     return (
@@ -196,18 +226,34 @@ const CreateProduct = (props) => {
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {
-                                            productVariantPrices.map((productVariantPrice, index) => {
-                                                return (
-                                                    <tr key={index}>
-                                                        <td>{productVariantPrice.title}</td>
-                                                        <td><input className="form-control" type="text"/></td>
-                                                        <td><input className="form-control" type="text"/></td>
-                                                    </tr>
-                                                )
-                                            })
-                                        }
-                                        </tbody>
+                                          {productVariantPrices.map((productVariantPrice, index) => {
+                                            return (
+                                              <tr key={index}>
+                                                <td>{productVariantPrice.title}</td>
+                                                <td>
+                                                  <input
+                                                    className="form-control"
+                                                    type="text"
+                                                    value={productVariantPrice.price}
+                                                    onChange={(e) =>
+                                                      handleProductVariantPriceChange(index, 'price', e.target.value)
+                                                    }
+                                                  />
+                                                </td>
+                                                <td>
+                                                  <input
+                                                    className="form-control"
+                                                    type="text"
+                                                    value={productVariantPrice.stock}
+                                                    onChange={(e) =>
+                                                      handleProductVariantPriceChange(index, 'stock', e.target.value)
+                                                    }
+                                                  />
+                                                </td>
+                                              </tr>
+                                            );
+                                          })}
+                                        </tbody>;
                                     </table>
                                 </div>
                             </div>
