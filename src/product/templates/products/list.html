@@ -5,6 +5,53 @@
 {% block title %} Product List {% endblock %}
 
 {% block content %}
+<style>
+    .col-md-2 {
+        text-align: center;
+        margin: 20px;
+    }
+
+    .pagination {
+        padding: 0;
+        margin: 0;
+    }
+
+    .pagination li {
+        display: inline;
+        margin: 0;
+        padding: 0;
+    }
+
+    .pagination li a,
+    .pagination li span {
+        color: #007bff;
+        border: 1px solid #8f98a1;
+        padding: 8px 12px;
+        text-decoration: none;
+    }
+
+    .pagination li.disabled span {
+        color: #6c757d;
+        pointer-events: none;
+    }
+
+    .pagination li.current span {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    /* Optional: Add hover effect for links */
+    .pagination li a:hover {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    /* Optional: Add border radius for better appearance */
+    .pagination li:first-child a,
+    .pagination li:last-child a {
+        border-radius: 5px;
+    }
+</style>
 
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Products</h1>
@@ -94,12 +141,36 @@
         <div class="card-footer">
             <div class="row justify-content-between">
                 <div class="col-md-6">
-                    <p>Showing 1 to 10 out of 100</p>
+                    <p>Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} out of {{ page_obj.paginator.count }}</p>
                 </div>
                 <div class="col-md-2">
-
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li><a href="?page=1">&laquo;</a></li>
+                            <li><a href="?page={{ page_obj.previous_page_number }}">&lsaquo;</a></li>
+                        {% else %}
+                            <li class="disabled"><span>&laquo;</span></li>
+                            <li class="disabled"><span>&lsaquo;</span></li>
+                        {% endif %}
+                
+                        {% for i in page_obj.paginator.page_range %}
+                            {% if page_obj.number == i %}
+                                <li class="current"><span>{{ i }}</span></li>
+                            {% else %}
+                                <li><a href="?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                
+                        {% if page_obj.has_next %}
+                            <li><a href="?page={{ page_obj.next_page_number }}">&rsaquo;</a></li>
+                            <li><a href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a></li>
+                        {% else %}
+                            <li class="disabled"><span>&rsaquo;</span></li>
+                            <li class="disabled"><span>&raquo;</span></li>
+                        {% endif %}
+                    </ul>
                 </div>
             </div>
-        </div>
+        </div>        
     </div>
 {% endblock %}

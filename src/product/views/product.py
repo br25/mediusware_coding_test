@@ -2,6 +2,8 @@ from django.views import generic
 from django.views.generic import ListView
 from django.db.models import F, Value
 from django.db.models.functions import Concat
+from django.core.paginator import Paginator
+
 
 from product.models import Variant, Product, ProductVariant, ProductVariantPrice
 
@@ -15,12 +17,11 @@ class CreateProductView(generic.TemplateView):
         context['variants'] = list(variants.all())
         return context
 
-
 class ListProductView(ListView):
     model = Product
     template_name = 'products/list.html'
     context_object_name = 'products'
-    paginate_by = 10
+    paginate_by = 2
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
