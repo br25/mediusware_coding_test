@@ -1,7 +1,8 @@
 from django.views import generic
 from django.views.generic import ListView
-from django.db.models import F, Value
+from django.db.models import Q, F, Value
 from django.db.models.functions import Concat
+from django.utils import timezone
 from django.core.paginator import Paginator
 
 
@@ -23,8 +24,39 @@ class ListProductView(ListView):
     context_object_name = 'products'
     paginate_by = 2
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        title = self.request.GET.get('title')
+        variant = self.request.GET.get('variant')
+        price_from = self.request.GET.get('price_from')
+        price_to = self.request.GET.get('price_to')
+        date = self.request.GET.get('date')
+
+        if title:
+            queryset = queryset.filter(title__icontains=title)
+
+        if variant:
+            queryset = queryset.filter(productvariant__variant_title=variant)
+
+        if price_from and price_to:
+            queryset = queryset.filter(productvariantprice__price__range=(price_from, price_to))
+
+        if date:
+            try:
+                date_obj = timezone.datetime.strptime(date, '%Y-%m-%d').date()
+                queryset = queryset.filter(created_at__date=date_obj)
+            except ValueError:
+                pass
+
+        return queryset.distinct()
+
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        context['variants'] = ProductVariant.objects.filter(
+            product__in=context['products']
+        ).values('variant_title').distinct()
 
         product_variant_data = {}
 
@@ -43,3 +75,4 @@ class ListProductView(ListView):
 
         context['product_variant_data'] = product_variant_data
         return context
+    
